@@ -71,6 +71,7 @@
         let storedTaskArray = localStorage.getItem("storedTaskArray");
         if (storedTaskArray && storedTaskArray.length > 0) {
           myTaskArray = JSON.parse(storedTaskArray);
+          //myTaskArray.reverse();
           myTaskArray.forEach((taskText) => {
             CreateTask(taskView, taskText);
           });
@@ -123,11 +124,11 @@
         taskText.style.height = "40px";
         taskText.style.whiteSpace = "nowrap";
         taskText.textContent = textValue;
-        deleteBtn.className =
-          "w3-button w3-block w3-red w3-margin-top w3-leftbar w3-rightbar";
+        deleteBtn.className = "w3-button w3-block w3-red w3-margin-top w3-leftbar w3-rightbar";
         deleteBtn.textContent = "Delete";
 
-        taskView.appendChild(taskContainer);
+        //taskView.appendChild(taskContainer);
+        taskView.prepend(taskContainer);
         taskContainer.appendChild(editContainer);
         taskContainer.appendChild(textContainer);
         taskContainer.appendChild(deleteContainer);
