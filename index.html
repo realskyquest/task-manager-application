@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Task Manager Application</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  </head>
+  <body>
+    <div class="w3-container w3-center w3-margin-bottom w3-dark-gray">
+      <h2>Task Manager Application</h2>
+    </div>
+
+    <div class="w3-container w3-dark-grey w3-margin">
+      <div class="w3-row-padding w3-center w3-margin w3-dark-gray">
+        <div class="w3-half">
+          <div class="w3-card w3-margin">
+            <input
+              type="text"
+              placeholder="Enter a task"
+              id="task-bar"
+              class="w3-input"
+              style="text-align: center"
+            />
+          </div>
+        </div>
+        <div class="w3-half">
+          <div class="w3-card w3-left-align w3-margin">
+            <button id="create-btn" class="w3-button w3-block w3-gray">
+              Create Task
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="w3-container w3-dark-gray w3-margin">
+      <div
+        id="task-view"
+        class="w3-container w3-margin"
+        style="overflow-y: scroll; height: 400px"
+      ></div>
+    </div>
+
+    <div class="w3-container w3-dark-gray">
+      <div class="w3-panel w3-leftbar w3-white">
+        <p>
+          <i>By skyquest</i> -
+          <a
+            href="https://github.com/realskyquest/weather-application"
+            style="color: darkblue"
+            >Github</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const taskView = document.querySelector("#task-view");
+      const createBtn = document.querySelector("#create-btn");
+      const taskBar = document.querySelector("#task-bar");
+
+      let createOrEdit = "create";
+      let editableTask = null;
+
+      let myTaskArray = [];
+
+      window.onload = function () {
+        let storedTaskArray = localStorage.getItem("storedTaskArray");
+        if (storedTaskArray && storedTaskArray.length > 0) {
+          myTaskArray = JSON.parse(storedTaskArray);
+          myTaskArray.forEach((taskText) => {
+            CreateTask(taskView, taskText);
+          });
+          console.log("loaded tasks", myTaskArray);
+        }
+      };
+
+      createBtn.addEventListener("click", () => {
+        if (taskBar.value.length > 0 && createOrEdit === "create") {
+          console.log("Task created ", taskBar.value);
+          CreateTask(taskView, taskBar.value);
+          myTaskArray.push(taskBar.value);
+          saveTasksToLocalStorage();
+          taskBar.value = "";
+          console.log("saved new task ", myTaskArray);
+        } else if (taskBar.value.length > 0 && createOrEdit === "edit") {
+          console.log("Task Edited ", taskBar.value);
+          const editedTaskIndex = myTaskArray.indexOf(editableTask.textContent);
+          if (editedTaskIndex !== -1) {
+            myTaskArray[editedTaskIndex] = taskBar.value;
+            editableTask.textContent = taskBar.value;
+            createOrEdit = "create";
+            createBtn.textContent = "Create Task";
+            saveTasksToLocalStorage();
+            console.log("saved edited task ", myTaskArray);
+          }
+        }
+      });
+
+      function CreateTask(taskView, textValue) {
+        const taskContainer = document.createElement("div");
+        taskContainer.className = "w3-row w3-card-4 w3-margin-bottom";
+
+        const editContainer = document.createElement("div");
+        const textContainer = document.createElement("div");
+        const deleteContainer = document.createElement("div");
+
+        editContainer.className = "w3-col w3-container m2 l2";
+        textContainer.className = "w3-col w3-container m8 l8";
+        deleteContainer.className = "w3-col w3-container m2 l2";
+
+        const editBtn = document.createElement("button");
+        const taskText = document.createElement("p");
+        const deleteBtn = document.createElement("button");
+
+        editBtn.className =
+          "w3-button w3-block w3-blue w3-margin-top w3-leftbar w3-rightbar";
+        editBtn.textContent = "Edit";
+        taskText.style.overflowX = "scroll";
+        taskText.style.height = "40px";
+        taskText.style.whiteSpace = "nowrap";
+        taskText.textContent = textValue;
+        deleteBtn.className =
+          "w3-button w3-block w3-red w3-margin-top w3-leftbar w3-rightbar";
+        deleteBtn.textContent = "Delete";
+
+        taskView.appendChild(taskContainer);
+        taskContainer.appendChild(editContainer);
+        taskContainer.appendChild(textContainer);
+        taskContainer.appendChild(deleteContainer);
+
+        editContainer.appendChild(editBtn);
+        textContainer.appendChild(taskText);
+        deleteContainer.appendChild(deleteBtn);
+
+        editBtn.addEventListener("click", function () {
+          console.log("EDIT");
+          createBtn.textContent = "Edit Task";
+          createOrEdit = "edit";
+          editableTask = taskText;
+        });
+
+        deleteBtn.addEventListener("click", function () {
+          console.log("DELETE");
+          taskContainer.remove();
+          const index = myTaskArray.indexOf(textValue);
+          if (index > -1) {
+            myTaskArray.splice(index, 1);
+            saveTasksToLocalStorage();
+          }
+        });
+      }
+
+      function saveTasksToLocalStorage() {
+        console.log("tasks saved ", myTaskArray);
+        localStorage.setItem("storedTaskArray", JSON.stringify(myTaskArray));
+      }
+    </script>
+  </body>
+</html>
